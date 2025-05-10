@@ -1,0 +1,6 @@
+Flask
+Flask-Mail
+Flask-SQLAlchemy
+Flask-Migrate
+Werkzeug
+itsdangerous
