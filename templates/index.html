@@ -1,1 +1,28 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Printables - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="min-h-screen flex flex-col justify-center items-center">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold mb-4">Welcome to <span class="text-blue-600">Printables</span></h1>
+      <p class="text-lg mb-8">Securely upload, manage, and print your documents for free.</p>
+      <div class="flex justify-center space-x-4">
+        <a href="{{ url_for('login') }}" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          Login
+        </a>
+        <a href="{{ url_for('register') }}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+          Sign Up
+        </a>
+      </div>
+    </div>
+    <footer class="mt-16 text-sm text-gray-500">
+      &copy; {{ now().year }} Printables. All rights reserved.
+    </footer>
+  </div>
+</body>
+</html>

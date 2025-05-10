@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Printables</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-600">Printables Dashboard</h1>
+    <form action="{{ url_for('logout') }}" method="GET">
+      <button class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Logout</button>
+    </form>
+  </header>
+
+  <main class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-semibold mb-4">Welcome, {{ session['username'] }}</h2>
+
+    <!-- Upload Form -->
+    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" class="mb-6 bg-white p-4 rounded shadow space-y-3">
+      <label class="block font-medium text-gray-700">Upload Files</label>
+      <input type="file" name="files" multiple required class="block w-full text-sm text-gray-700"/>
+      <button type="submit" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Upload
+      </button>
+    </form>
+
+    <!-- Files List -->
+    {% if files %}
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="text-lg font-semibold mb-4">Your Files</h3>
+        <ul class="space-y-3">
+          {% for file in files %}
+            <li class="flex justify-between items-center border-b py-2">
+              <span class="truncate">{{ file }}</span>
+              <div class="flex space-x-2">
+                <!-- Print -->
+                <form action="{{ url_for('print_file', filename=file) }}" method="POST" onsubmit="return confirmPrint(event, '{{ file }}')">
+                  <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Print</button>
+                </form>
+                <!-- Share -->
+                <button onclick="shareFile('{{ file }}')" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Share</button>
+                <!-- Delete -->
+                <form action="{{ url_for('delete_file', filename=file) }}" method="POST" onsubmit="return confirm('Delete this file?')">
+                  <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <p class="text-gray-600 mt-4">You haven't uploaded any files yet.</p>
+    {% endif %}
+  </main>
+
+  <script>
+    function confirmPrint(event, filename) {
+      event.preventDefault();
+      const printWindow = window.open("{{ url_for('serve_file', filename='') }}" + filename, '_blank');
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+        fetch("{{ url_for('print_file', filename='') }}" + filename, { method: 'POST' });
+      };
+      return false;
+    }
+
+    function shareFile(filename) {
+      const fileUrl = "{{ url_for('serve_file', filename='') }}" + filename;
+      if (navigator.share) {
+        navigator.share({
+          title: 'Printables File',
+          url: fileUrl
+        }).catch(console.error);
+      } else {
+        window.open(fileUrl, '_blank');
+      }
+    }
+  </script>
+</body>
+</html>
